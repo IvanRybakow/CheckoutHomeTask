@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Checkout.HomeTask.Api.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Swagger;
+using Checkout.HomeTask.Api.Settings;
 
 namespace Checkout.HomeTask.Api
 {
@@ -28,21 +30,12 @@ namespace Checkout.HomeTask.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSwaggerGen(options => options.SwaggerDoc("v1", new Info { Title = "Checkout Api", Version = "v1" }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,9 +55,12 @@ namespace Checkout.HomeTask.Api
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
-            app.UseAuthentication();
+            var swaggerSettings = new SwaggerSettings();
+            Configuration.Bind(nameof(SwaggerSettings), swaggerSettings);
+
+            app.UseSwagger(options => options.RouteTemplate = swaggerSettings.JsonRoute);
+            app.UseSwaggerUI(options => options.SwaggerEndpoint(swaggerSettings.UIEndpoint, swaggerSettings.Description));
 
             app.UseMvc(routes =>
             {

@@ -8,20 +8,18 @@ namespace Checkout.HomeTask.Api.Validators
     {
         public PaymentRequestValidator()
         {
-            //card number must be 12-digit number
-            RuleFor(pr => pr.CardNumber).NotEmpty().Matches(@"^\d{12}$");
+            RuleFor(pr => pr.CardNumber).NotEmpty().Matches(@"^\d{12}$")
+                .WithMessage("Card number must be 12-digit number");
 
-            //cvv must be 3-digit number
-            RuleFor(pr => pr.Cvv).NotEmpty().Matches(@"^\d{3}$");
+            RuleFor(pr => pr.Cvv).NotEmpty().Matches(@"^\d{3}$")
+                .WithMessage("cvv must be a 3-digit number");
 
-            //year must be greater or equal to current yaer
             RuleFor(pr => pr.ExpireYear).NotEmpty().Must(y => 
             {
                 var isNumber = int.TryParse(y, out int n);
                 return isNumber && n >= DateTime.UtcNow.Year;
-            });
+            }).WithMessage("Year must be greater or equal to current yaer");
 
-            //when expire year is a current year we check if month is greater than current one
             When(pr => 
             {
                 var isNumber = int.TryParse(pr.ExpireYear, out int n);
@@ -32,21 +30,18 @@ namespace Checkout.HomeTask.Api.Validators
                 {
                     var isNumber = int.TryParse(m, out int n);
                     return isNumber && n > DateTime.UtcNow.Month && n < 13;
-                });
+                }).WithMessage("When expire year is a current year month must be greater than current one"); 
             });
 
-            //month must be a number between 1 and 12
             RuleFor(pr => pr.ExpireMonth).NotEmpty().Must(m =>
             {
                 var isNumber = int.TryParse(m, out int n);
                 return isNumber && n > 0 && n < 13;
-            });
+            }).WithMessage("Month must be a number between 1 and 12");
 
-            //currency must either EUR or USD
-            RuleFor(pr => pr.Currency).NotEmpty().Matches(@"^(EUR|USD|eur|usd)$");
+            RuleFor(pr => pr.Currency).NotEmpty().Matches(@"^(EUR|USD|eur|usd)$").WithMessage("Currency must be either EUR or USD");
 
-            //amount must be greater than 0
-            RuleFor(pr => pr.Amount).GreaterThan(0);
+            RuleFor(pr => pr.Amount).GreaterThan(0).WithMessage("Amount must be greater than 0");
         }
     }
 }

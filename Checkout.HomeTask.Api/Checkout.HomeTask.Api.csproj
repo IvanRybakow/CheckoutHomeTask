@@ -17,10 +17,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="Contracts\v1\Responses\" />
-    <Folder Include="Filters\" />
-  </ItemGroup>
-
 </Project>

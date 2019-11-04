@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using Checkout.HomeTask.Api.Settings;
 using AutoMapper;
+using Checkout.HomeTask.Api.Services;
+using FluentValidation.AspNetCore;
 
 namespace Checkout.HomeTask.Api
 {
@@ -28,8 +30,11 @@ namespace Checkout.HomeTask.Api
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<CheckoutDbContext>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => options.EnableEndpointRouting = false)
+                .AddFluentValidation(conf => conf.RegisterValidatorsFromAssemblyContaining<Startup>())
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(options => options.SwaggerDoc("v1", new Info { Title = "Checkout Api", Version = "v1" }));
+            services.AddSingleton<IBankService, MockBankService>();
             services.AddAutoMapper(typeof(Startup));
         }
 
@@ -39,7 +44,6 @@ namespace Checkout.HomeTask.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
             else
             {

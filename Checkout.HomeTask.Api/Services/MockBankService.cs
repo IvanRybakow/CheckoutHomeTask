@@ -7,9 +7,14 @@ namespace Checkout.HomeTask.Api.Services
     public class MockBankService : IBankService
     {
 
-        public Task<PaymentResult> ProceedPaymentAsync(string CardNumber, string CardHolderName, string ExpireMonth, string ExpireYear, int Amount, string cvv, string MerchantAccountNumber)
+        public async Task<PaymentResult> ProceedPaymentAsync(BankPaymentRequest request)
         {
-            throw new NotImplementedException();
+
+            return await Task.Factory.StartNew<PaymentResult>(() => new PaymentResult
+                                                                {
+                                                                    PaymentId = Guid.NewGuid().ToString(),
+                                                                    StatusCode = PaymentStatusCode.Success
+                                                                }); 
         }
     }
 }

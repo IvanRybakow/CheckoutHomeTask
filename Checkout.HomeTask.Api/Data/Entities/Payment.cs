@@ -8,13 +8,11 @@ namespace Checkout.HomeTask.Api.Data.Entities
     public class Payment
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid Id { get; set; }
 
-        public string MerchantId { get; set; }
+        public string BankPaymentId { get; set; }
 
-        [ForeignKey(nameof(MerchantId))]
-        public IdentityUser Merchant { get; set; }
+        public string MerchantId { get; set; }
 
         public string MaskedCardNumber { get; set; }
 

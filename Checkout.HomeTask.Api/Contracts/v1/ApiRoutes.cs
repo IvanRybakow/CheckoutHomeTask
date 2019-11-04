@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Checkout.HomeTask.Api.Contracts.v1
+﻿namespace Checkout.HomeTask.Api.Contracts.v1
 {
     public static class ApiRoutes
     {
@@ -14,6 +9,7 @@ namespace Checkout.HomeTask.Api.Contracts.v1
         public static class Payment
         {
             public const string AddPayment = baseUrl + "/payment";
+            public const string GetAllPayments = baseUrl + "/payments";
         }
     }
 }

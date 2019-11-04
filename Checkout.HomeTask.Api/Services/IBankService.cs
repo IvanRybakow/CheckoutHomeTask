@@ -8,12 +8,6 @@ namespace Checkout.HomeTask.Api.Services
 {
     public interface IBankService
     {
-        Task<PaymentResult> ProceedPaymentAsync(string CardNumber, 
-            string CardHolderName,
-            string ExpireMonth,
-            string ExpireYear,
-            int Amount,
-            string cvv,
-            string MerchantAccountNumber);
+        Task<PaymentResult> ProceedPaymentAsync(BankPaymentRequest request);
     }
 }

@@ -7,7 +7,7 @@ namespace Checkout.HomeTask.Api.Domain
 {
     public class PaymentResult
     {
-        public Guid PaymentId { get; set; }
+        public string PaymentId { get; set; }
         public PaymentStatusCode StatusCode { get; set; }
     }
 }

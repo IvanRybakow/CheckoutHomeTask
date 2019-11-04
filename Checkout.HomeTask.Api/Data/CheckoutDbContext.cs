@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Checkout.HomeTask.Api.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Checkout.HomeTask.Api.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class CheckoutDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public CheckoutDbContext(DbContextOptions<CheckoutDbContext> options)
             : base(options)
         {
         }
+        public DbSet<Payment> Payments { get; set; }
     }
 }

@@ -8,8 +8,8 @@ namespace Checkout.HomeTask.Api.Validators
     {
         public PaymentRequestValidator()
         {
-            RuleFor(pr => pr.CardNumber).NotEmpty().Matches(@"^\d{12}$")
-                .WithMessage("Card number must be 12-digit number");
+            RuleFor(pr => pr.CardNumber).NotEmpty().Matches(@"^\d{16}$")
+                .WithMessage("Card number must be 16-digit number");
 
             RuleFor(pr => pr.Cvv).NotEmpty().Matches(@"^\d{3}$")
                 .WithMessage("cvv must be a 3-digit number");

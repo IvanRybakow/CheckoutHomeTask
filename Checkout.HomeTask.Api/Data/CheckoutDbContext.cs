@@ -10,6 +10,6 @@ namespace Checkout.HomeTask.Api.Data
             : base(options)
         {
         }
-        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentDTO> Payments { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Checkout.HomeTask.Api.Domain;
 
 namespace Checkout.HomeTask.Api.Services
 {
-    public class MockBankService : IBankService
+    public class BankService : IBankService
     {
 
         public async Task<PaymentResult> ProceedPaymentAsync(BankPaymentRequest request)

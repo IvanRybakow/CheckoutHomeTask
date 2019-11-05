@@ -81,7 +81,7 @@ namespace Checkout.HomeTask.Api
                 });
                 options.AddSecurityRequirement(security);
             });
-            services.AddSingleton<IBankService, MockBankService>();
+            services.AddSingleton<IBankService, BankService>();
             services.AddAutoMapper(typeof(Startup));
         }
 

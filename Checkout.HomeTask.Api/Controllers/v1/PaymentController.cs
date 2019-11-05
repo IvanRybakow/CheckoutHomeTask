@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Checkout.HomeTask.Api.Contracts.v1;
@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Checkout.HomeTask.Api.Controllers.v1
 {
@@ -23,13 +24,16 @@ namespace Checkout.HomeTask.Api.Controllers.v1
         private readonly IBankService bankService;
         private readonly IMapper mapper;
         private readonly UserManager<IdentityUser> userManager;
+        private readonly ILogger logger;
 
-        public PaymentController(CheckoutDbContext ctx, IBankService bank, IMapper _mapper, UserManager<IdentityUser> manager)
+        public PaymentController(CheckoutDbContext ctx, IBankService bank, IMapper _mapper
+            ,UserManager<IdentityUser> manager, ILoggerFactory loggerFactory)
         {
             dbContext = ctx;
             bankService = bank;
             mapper = _mapper;
             userManager = manager;
+            logger = loggerFactory.CreateLogger<PaymentController>();
         }
 
         [Authorize]
@@ -41,6 +45,7 @@ namespace Checkout.HomeTask.Api.Controllers.v1
             var paymentResult = await bankService.ProceedPaymentAsync(requestToBank);
             if (paymentResult.StatusCode != PaymentStatusCode.Success)
             {
+                logger.LogInformation($"Payment for merchant {HttpContext.GetMerchantId()} was declined");
                 return BadRequest(
                     new ErrorResponse
                     {
@@ -50,18 +55,25 @@ namespace Checkout.HomeTask.Api.Controllers.v1
                         }
                     });
             }
-            var payment = mapper.Map<Payment>(requestToBank);
+            var payment = mapper.Map<PaymentDTO>(requestToBank);
             payment.BankPaymentId = paymentResult.PaymentId;
             await dbContext.Payments.AddAsync(payment);
             await dbContext.SaveChangesAsync();
-            return Ok();
+            var response = mapper.Map<PaymentResponse>(payment);
+            logger.LogInformation($"Successfully proceeded payment for merchant {payment.MerchantId}");
+            return Ok(response);
         } 
 
         [Authorize]
         [HttpGet(ApiRoutes.Payment.GetAllPayments)]
         public async Task<IActionResult> GetPayments()
         {
-            return Ok(await dbContext.Payments.ToListAsync());
+            var merchantId = HttpContext.GetMerchantId();
+            var payments = (await dbContext.Payments.Where(p => p.MerchantId == merchantId)
+                .ToListAsync())
+                .Select(p => mapper.Map<PaymentResponse>(p));
+            logger.LogInformation($"Merchant {merchantId} requested history of its operations");
+            return Ok(payments);
         }
 
     }

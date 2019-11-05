@@ -9,6 +9,6 @@
         public string Cvv { get; set; }
         public int Amount { get; set; }
         public string Currency { get; set; }
-        public string MerchantAccount { get; set; }
+        public string MerchantId { get; set; }
     }
 }

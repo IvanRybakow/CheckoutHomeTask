@@ -12,6 +12,10 @@ using AutoMapper;
 using Checkout.HomeTask.Api.Services;
 using FluentValidation.AspNetCore;
 using Checkout.HomeTask.Api.Filters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Collections.Generic;
 
 namespace Checkout.HomeTask.Api
 {
@@ -31,14 +35,52 @@ namespace Checkout.HomeTask.Api
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<CheckoutDbContext>();
 
-            services.AddMvc(options => 
+            services.AddMvc(options =>
                     {
                         options.EnableEndpointRouting = false;
                         options.Filters.Add<ValidationFilter>();
                     })
                     .AddFluentValidation(conf => conf.RegisterValidatorsFromAssemblyContaining<Startup>())
                     .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSwaggerGen(options => options.SwaggerDoc("v1", new Info { Title = "Checkout Api", Version = "v1" }));
+            var jwtSettings = new JwtSettings();
+            Configuration.Bind(nameof(JwtSettings), jwtSettings);
+            services.AddSingleton(jwtSettings);
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<ITokenService, TokenService>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options => {
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    RequireExpirationTime = false,
+                    ValidateLifetime = true
+                };
+            });
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info { Title = "Checkout Api", Version = "v1" });
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[0] }
+                };
+                options.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                options.AddSecurityRequirement(security);
+            });
             services.AddSingleton<IBankService, MockBankService>();
             services.AddAutoMapper(typeof(Startup));
         }
@@ -59,6 +101,7 @@ namespace Checkout.HomeTask.Api
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseAuthentication();
 
             var swaggerSettings = new SwaggerSettings();
             Configuration.Bind(nameof(SwaggerSettings), swaggerSettings);

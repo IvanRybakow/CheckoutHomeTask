@@ -11,5 +11,11 @@
             public const string AddPayment = baseUrl + "/payment";
             public const string GetAllPayments = baseUrl + "/payments";
         }
+
+        public static class Identity
+        {
+            public const string Register = baseUrl + "/register";
+            public const string Login = baseUrl + "/login";
+        }
     }
 }

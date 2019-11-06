@@ -72,6 +72,7 @@ namespace Checkout.HomeTask.Api
                 {
                     {"Bearer", new string[0] }
                 };
+                //use Bearer + Token line to authorize in Swagger UI
                 options.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "JWT Authorization",
@@ -107,14 +108,13 @@ namespace Checkout.HomeTask.Api
             Configuration.Bind(nameof(SwaggerSettings), swaggerSettings);
 
             app.UseSwagger(options => options.RouteTemplate = swaggerSettings.JsonRoute);
-            app.UseSwaggerUI(options => options.SwaggerEndpoint(swaggerSettings.UIEndpoint, swaggerSettings.Description));
+            app.UseSwaggerUI(options => 
+                {
+                    options.SwaggerEndpoint(swaggerSettings.UIEndpoint, swaggerSettings.Description);
+                    //options.RoutePrefix = string.Empty;
+                });
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc();
         }
     }
 }

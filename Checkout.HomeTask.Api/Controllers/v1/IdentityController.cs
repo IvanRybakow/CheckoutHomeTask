@@ -22,7 +22,7 @@ namespace Checkout.HomeTask.Api.Controllers.v1
         }
 
         [HttpPost(ApiRoutes.Identity.Register)]
-        public async Task<IActionResult> Register(MerchantAuthRequest request)
+        public async Task<IActionResult> Register([FromBody] MerchantAuthRequest request)
         {
             var result = await _identityService.RegisterMerchant(request.Email, request.Password);
             if (!result.IsSuccessfull)
@@ -38,7 +38,7 @@ namespace Checkout.HomeTask.Api.Controllers.v1
         }
 
         [HttpPost(ApiRoutes.Identity.Login)]
-        public async Task<IActionResult> Login(MerchantAuthRequest request)
+        public async Task<IActionResult> Login([FromBody] MerchantAuthRequest request)
         {
             var result = await _identityService.LoginMerchant(request.Email, request.Password);
             if (!result.IsSuccessfull)

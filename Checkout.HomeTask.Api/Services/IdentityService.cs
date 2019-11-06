@@ -22,7 +22,9 @@ namespace Checkout.HomeTask.Api.Services
         public async Task<MerchantAuthResult> LoginMerchant(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || await _userManager.CheckPasswordAsync(user, password))
+            var check = await _userManager.CheckPasswordAsync(user, password);
+
+            if (user == null || !check)
             {
                 return new MerchantAuthResult
                 {

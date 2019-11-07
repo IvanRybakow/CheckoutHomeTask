@@ -50,7 +50,7 @@ namespace Checkout.HomeTask.IntegrationTests
         }
 
         [Fact]
-        public async Task ProceedPayment_CantProceedWithWithIncorrectCardData()
+        public async Task ProceedPayment_CantProceedWithIncorrectCardData()
         {
             //Arrange
             var request = new PaymentRequest
@@ -114,7 +114,6 @@ namespace Checkout.HomeTask.IntegrationTests
         [Fact]
         public async Task GetPayments_ReturnsCorrectNumberOfPayments()
         {
-            //Arrange
             //Arrange
             var request = new PaymentRequest
             {

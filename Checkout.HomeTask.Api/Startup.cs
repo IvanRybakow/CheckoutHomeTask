@@ -116,7 +116,6 @@ namespace Checkout.HomeTask.Api
             app.UseSwaggerUI(options => 
                 {
                     options.SwaggerEndpoint(swaggerSettings.UIEndpoint, swaggerSettings.Description);
-                    //options.RoutePrefix = string.Empty;
                 });
 
             app.UseMvc();

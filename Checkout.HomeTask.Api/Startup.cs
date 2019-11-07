@@ -89,7 +89,11 @@ namespace Checkout.HomeTask.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, CheckoutDbContext context)
         {
-            context.Database.Migrate();
+            if (!context.Database.IsInMemory())
+            {
+                context.Database.Migrate();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

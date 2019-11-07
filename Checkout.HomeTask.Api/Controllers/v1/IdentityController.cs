@@ -21,6 +21,11 @@ namespace Checkout.HomeTask.Api.Controllers.v1
             logger = loggerFactory.CreateLogger<IdentityController>();
         }
 
+        /// <summary>
+        /// Allows new merchants to register to use Api service
+        /// </summary>
+        /// <response code = "200">Returns JWT token which should be used to access other endpoints</response>
+        /// <response code = "400">Registration fails if provided credentials are incorrect</response>
         [HttpPost(ApiRoutes.Identity.Register)]
         public async Task<IActionResult> Register([FromBody] MerchantAuthRequest request)
         {
@@ -37,6 +42,11 @@ namespace Checkout.HomeTask.Api.Controllers.v1
             });
         }
 
+        /// <summary>
+        /// Allows existing merchants to login to use Api service
+        /// </summary>
+        /// <response code = "200">Returns JWT token which should be used to access other endpoints</response>
+        /// <response code = "400">Ligin fails if provided credentials are incorrect</response>
         [HttpPost(ApiRoutes.Identity.Login)]
         public async Task<IActionResult> Login([FromBody] MerchantAuthRequest request)
         {

@@ -16,6 +16,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Collections.Generic;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
+using System.IO;
+using System;
 
 namespace Checkout.HomeTask.Api
 {
@@ -68,6 +72,7 @@ namespace Checkout.HomeTask.Api
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new Info { Title = "Checkout Api", Version = "v1" });
+                options.ExampleFilters();
                 var security = new Dictionary<string, IEnumerable<string>>
                 {
                     {"Bearer", new string[0] }
@@ -81,7 +86,11 @@ namespace Checkout.HomeTask.Api
                     Type = "apiKey"
                 });
                 options.AddSecurityRequirement(security);
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
             });
+            services.AddSwaggerExamplesFromAssemblyOf<Startup>();
             services.AddSingleton<IBankService, BankService>();
             services.AddAutoMapper(typeof(Startup));
         }

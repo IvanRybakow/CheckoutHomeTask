@@ -36,6 +36,12 @@ namespace Checkout.HomeTask.Api.Controllers.v1
             logger = loggerFactory.CreateLogger<PaymentController>();
         }
 
+
+        /// <summary>
+        /// Allows merchants to proceed payments
+        /// </summary>
+        /// <response code = "200">Returns details of successfull payment</response>
+        /// <response code = "400">Return errors if somethins went wrong</response>
         [Authorize]
         [HttpPost(ApiRoutes.Payment.AddPayment)]
         public async Task<IActionResult> ProceedPayment([FromBody] PaymentRequest paymentRequest)
@@ -62,8 +68,12 @@ namespace Checkout.HomeTask.Api.Controllers.v1
             var response = mapper.Map<PaymentResponse>(payment);
             logger.LogInformation($"Successfully proceeded payment for merchant {payment.MerchantId}");
             return Ok(response);
-        } 
+        }
 
+        /// <summary>
+        /// Allows merchants to get history of its payments
+        /// </summary>
+        /// <response code = "200">Returns list of payment of requesting merchant</response>
         [Authorize]
         [HttpGet(ApiRoutes.Payment.GetAllPayments)]
         public async Task<IActionResult> GetPayments()
